@@ -1446,7 +1446,7 @@ struct ArgumentsExpression {
 static std::string strip(const std::string & s, const std::string & chars = "", bool left = true, bool right = true) {
   auto charset = chars.empty() ? " \t\n\r" : chars;
   auto start = left ? s.find_first_not_of(charset) : 0;
-    if (start == std::string::npos) return "";
+  if (start == std::string::npos) return "";
   auto end = right ? s.find_last_not_of(charset) : s.size() - 1;
   return s.substr(start, end - start + 1);
 }
@@ -1455,12 +1455,11 @@ static std::vector<std::string> split(const std::string & s, const std::string &
   std::vector<std::string> result;
   size_t start = 0;
   size_t end = s.find(sep);
-  int splits = 0;
-  while (end != std::string::npos && (maxsplit < 0 || splits < maxsplit)) {
+  while (end != std::string::npos && maxsplit != 0) {
     result.push_back(s.substr(start, end - start));
     start = end + sep.length();
     end = s.find(sep, start);
-    splits++;
+    --maxsplit;
   }
   result.push_back(s.substr(start));
   return result;
@@ -1470,15 +1469,15 @@ static std::vector<std::string> rsplit(const std::string & s, const std::string 
   std::vector<std::string> result;
   size_t end = s.length();
   size_t pos = s.rfind(sep);
-  int splits = 0;
-  while (pos != std::string::npos && (maxsplit < 0 || splits < maxsplit)) {
-    result.insert(result.begin(), s.substr(pos + sep.length(), end - pos - sep.length()));
+  while (pos != std::string::npos && maxsplit != 0) {
+    result.push_back(s.substr(pos + sep.length(), end - pos - sep.length()));
     end = pos;
-    splits++;
+    --maxsplit;
     if (pos == 0) break;
     pos = s.rfind(sep, pos - 1);
   }
-  result.insert(result.begin(), s.substr(0, end));
+  result.push_back(s.substr(0, end));
+  std::reverse(result.begin(), result.end());
   return result;
 }
 
